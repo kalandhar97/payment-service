@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/kalandhar97/payment-service
-  tag: "1.0.0"
+  tag: "sha-aafe963"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
