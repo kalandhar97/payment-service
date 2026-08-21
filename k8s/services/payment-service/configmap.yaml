@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-service-config
+  namespace: payment-processor
+data:
+  SPRING_APPLICATION_NAME: "payment-service"
+  SERVER_PORT: "8087"
+  TRACING_SAMPLING_PROBABILITY: "0.1"
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics,prometheus"
+  DB_URL: "jdbc:postgresql://postgres:5432/paymentservicedb"
+  DB_USERNAME: "postgres"
+  DB_USER: "postgres"

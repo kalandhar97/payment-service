@@ -1,0 +1,34 @@
+name: Observability stack
+run-name: Observability Stack
+# Optional workflow to validate observability compose configs on PRs that touch them.
+on:
+  pull_request:
+    paths:
+      - "docker/observability/**"
+      - "docker-compose.yml"
+      - "k8s/observability/**"
+  workflow_dispatch:
+
+jobs:
+  validate-compose:
+    name: Validate docker compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compose config
+        run: docker compose --profile observability config
+
+  validate-kustomize:
+    name: Validate kustomize
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Kustomize build observability
+        run: kubectl kustomize k8s/observability

@@ -1,0 +1,10 @@
+1. Install chart:
+   helm upgrade --install payment-service . -n payment-processor --create-namespace
+
+2. Image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+
+3. Argo CD Application: k8s/argocd/payment-service-application.yaml
+
+4. Metrics: prometheus.io annotations scrape /actuator/prometheus
+5. Traces: OTEL_EXPORTER_OTLP_ENDPOINT from platform-config
+6. Logs: JSON stdout → Alloy → Loki (local docker compose profile observability)

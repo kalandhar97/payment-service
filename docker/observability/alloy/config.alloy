@@ -1,0 +1,38 @@
+// Grafana Alloy tails structured JSON log files written by Spring Boot services
+// (logs/<service>.json.log on the host, mounted at /var/log/paymentprocessor).
+
+local.file_match "service_logs" {
+  path_targets = [{
+    __path__ = "/var/log/paymentprocessor/*.json.log",
+  }]
+}
+
+loki.source.file "services" {
+  targets    = local.file_match.service_logs.targets
+  forward_to = [loki.process.json_logs.receiver]
+}
+
+loki.process "json_logs" {
+  forward_to = [loki.write.default.receiver]
+
+  stage.json {
+    expressions = {
+      level   = "level",
+      service = "service",
+      message = "message",
+    }
+  }
+
+  stage.labels {
+    values = {
+      level   = "level",
+      service = "service",
+    }
+  }
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

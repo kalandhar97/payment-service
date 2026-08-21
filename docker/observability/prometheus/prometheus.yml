@@ -1,0 +1,37 @@
+# Scrapes Spring Boot /actuator/prometheus on the host.
+# Services run via bootRun on localhost; host.docker.internal works on Docker Desktop (Windows/Mac).
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: payment-processor-services
+    metrics_path: /actuator/prometheus
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - host.docker.internal:8443  # gateway-service
+          - host.docker.internal:8081  # authentication-service
+          - host.docker.internal:8082  # user-service
+          - host.docker.internal:8083  # merchant-service
+          - host.docker.internal:8084  # tokenization-service
+          - host.docker.internal:8085  # limit-service
+          - host.docker.internal:8086  # authorization-service
+          - host.docker.internal:8087  # payment-service
+          - host.docker.internal:8088  # fraud-service
+          - host.docker.internal:8089  # clearing-service
+          - host.docker.internal:8090  # dispute-service
+          - host.docker.internal:8091  # settlement-service
+          - host.docker.internal:8092  # ledger-service
+          - host.docker.internal:8093  # reconciliation-service
+          - host.docker.internal:8094  # notification-service
+          - host.docker.internal:8095  # audit-service
+          - host.docker.internal:8096  # reporting-service
+        labels:
+          platform: payment-processor
+
+  - job_name: otel-collector
+    static_configs:
+      - targets:
+          - otel-collector:8888

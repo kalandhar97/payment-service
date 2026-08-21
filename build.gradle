@@ -2,6 +2,10 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.2'
     id 'io.spring.dependency-management' version '1.1.6'
+
+    id 'jacoco'
+    id 'org.sonarqube' version '5.1.0.4882'
+    id 'org.owasp.dependencycheck' version '10.0.4'
 }
 
 group = 'com.paymentprocessor'
@@ -50,4 +54,42 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacoco {
+    toolVersion = '0.8.12'
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+sonar {
+    properties {
+        property 'sonar.organization', System.getenv('SONAR_ORGANIZATION') ?: 'kalandhar97'
+        property 'sonar.projectKey', 'kalandhar97_payment-service'
+        property 'sonar.projectName', 'payment-service'
+        property 'sonar.java.coveragePlugin', 'jacoco'
+        property 'sonar.coverage.jacoco.xmlReportPaths',
+                "${layout.buildDirectory.get()}/reports/jacoco/test/jacocoTestReport.xml"
+        property 'sonar.exclusions', '**/generated/**'
+    }
+}
+
+dependencyCheck {
+    formats = ['HTML', 'JSON']
+    failBuildOnCVSS = 8.0
+    analyzers {
+        assemblyEnabled = false
+        nodeAuditEnabled = false
+        nodeEnabled = false
+    }
+    nvd {
+        apiKey = System.getenv('NVD_API_KEY') ?: ''
+    }
 }

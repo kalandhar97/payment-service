@@ -1,0 +1,81 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/kalandhar97/payment-service
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  name: paymentprocessor
+
+service:
+  type: ClusterIP
+  port: 8087
+  targetPort: 8087
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: payment.paymentprocessor.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+probes:
+  readiness:
+    path: /actuator/health/readiness
+    initialDelaySeconds: 40
+    periodSeconds: 10
+  liveness:
+    path: /actuator/health/liveness
+    initialDelaySeconds: 60
+    periodSeconds: 20
+  scheme: HTTP
+
+env:
+  SPRING_PROFILES_ACTIVE: prod,vault
+  VAULT_ENABLED: "true"
+  VAULT_AUTHENTICATION: KUBERNETES
+  TRACING_SAMPLING_PROBABILITY: "0.1"
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics,prometheus
+
+config:
+  SPRING_APPLICATION_NAME: payment-service
+  SERVER_PORT: "8087"
+  DB_URL: "jdbc:postgresql://postgres:5432/paymentservicedb"
+  DB_USERNAME: "postgres"
+  DB_USER: "postgres"
+
+# Platform ConfigMap keys referenced by name (created in k8s/base).
+platformConfigMap: platform-config
+
+observability:
+  prometheusScraping: true
+  otelEndpointKey: OTEL_EXPORTER_OTLP_ENDPOINT
+
+vault:
+  inject: true
+  role: paymentprocessor
+  secretPath: secret/data/paymentprocessor/payment-service
+
+dbPassword: change-me
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

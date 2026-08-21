@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: payment-processor
+resources:
+  - deployment.yaml
+  - service.yaml
+  - configmap.yaml
+  - secret.yaml
+images:
+  - name: paymentprocessor/payment-service
+    newName: paymentprocessor/payment-service
+    newTag: latest

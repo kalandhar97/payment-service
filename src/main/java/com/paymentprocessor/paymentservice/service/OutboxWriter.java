@@ -32,15 +32,16 @@ public class OutboxWriter {
         row.setAggregateId(intentId);
         row.setAggregateType(AGGREGATE_TYPE);
         row.setEventType(eventType);
-        row.setPayload(toJson(payload));
+        row.setPayload(toJson(intentId, eventType, payload));
         outbox.save(row);
     }
 
-    private String toJson(Map<String, Object> payload) {
+    private String toJson(String aggregateId, String eventType, Map<String, Object> payload) {
         try {
             return objectMapper.writeValueAsString(payload);
         } catch (JsonProcessingException e) {
-            return "{}";
+            throw new IllegalStateException("Failed to serialize outbox payload for aggregate "
+                    + aggregateId + ", event " + eventType, e);
         }
     }
 }

@@ -1,0 +1,14 @@
+# Local platform sidecars for observability (+ optional Vault).
+#
+# Observability (LGTM + OTel Collector):
+#   docker compose --profile observability up -d
+#
+# Vault (optional secrets):
+#   docker compose --profile vault up -d
+#
+# Both:
+#   docker compose --profile observability --profile vault up -d
+
+include:
+  - path: docker/observability/docker-compose.observability.yml
+  - path: docker/vault/docker-compose.vault.yml
